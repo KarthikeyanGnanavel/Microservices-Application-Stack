@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  database:
+    build:
+      context: ./Database
+    ports:
+      - "5001:5001"
+    environment:
+      DB_SERVER: 34.139.208.194  # Replace with your Cloud SQL instance IP
+      DB_NAME: mydb  # Replace with your database name
+      DB_USER: sqlserver  # Replace with your database username
+      DB_PASSWORD: Karthik@98  # Replace with your database password
+    networks:
+      - app-network
+
+  userinterface:
+    build:
+      context: ./UserInterface
+    ports:
+      - "5000:5000"
+    depends_on:
+      - database
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

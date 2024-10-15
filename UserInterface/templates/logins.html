@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Logins</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #04AA6D;
+            overflow: hidden;
+            padding: 10px;
+            color: white;
+            text-align: center;
+        }
+
+        .nav-links {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .nav-links li {
+            display: inline;
+            margin: 0 15px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .container {
+            width: 600px;
+            margin: 100px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        a {
+            color: #04AA6D;
+            text-decoration: underline;
+        }
+
+        a:hover {
+            text-decoration: none;
+            color: #0b7a5e;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="navbar">
+        <h1>My Application</h1>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/logins">All User Details</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </div>
+</header>
+
+<div class="container">
+    <h1>All Login Users</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Password</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for login in logins %}
+            <tr>
+                <td>{{ login.username }}</td>
+                <td>{{ login.password }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p><a href="{{ url_for('welcome') }}">Back to Welcome</a></p>
+</div>
+
+</body>
+</html>

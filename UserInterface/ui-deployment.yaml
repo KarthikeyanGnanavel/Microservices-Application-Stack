@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui-app
+  namespace: ui
+  labels:
+    app: ui-app
+spec:
+  replicas: 1  # Number of pod replicas
+  selector:
+    matchLabels:
+      app: ui-app
+  template:
+    metadata:
+      labels:
+        app: ui-app
+    spec:
+      containers:
+      - name: ui-app
+        image: gcr.io/docker2gcp/ui-app:v1  # Replace with your image from Google Artifact Registry
+        ports:
+        - containerPort: 5002  # Port your app runs on
+        env:
+        - name: DB_APP_IP
+          value: "34.74.89.87"  # Use the service name of the db-app
+        - name: DB_APP_PORT
+          value: "5001"  # Port of the db-app service

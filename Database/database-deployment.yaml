@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-app
+  namespace: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-app
+  template:
+    metadata:
+      labels:
+        app: db-app
+    spec:
+      containers:
+      - name: db-app
+        image: gcr.io/docker2gcp/db-app:v1  # Replace with your actual image details
+        ports:
+        - containerPort: 5001
+        env:
+        - name: DB_SERVER
+          value: "34.139.208.194,1433"  # Replace with actual value or use a Kubernetes secret
+        - name: DB_NAME
+          value: "mydb"  # Replace with actual value or use a Kubernetes secret
+        - name: DB_USER
+          value: "sqlserver"  # Replace with actual value or use a Kubernetes secret
+        - name: DB_PASSWORD
+          value: "Karthik@98"  # Replace with actual value or use a Kubernetes secret
+      imagePullSecrets:
+      - name: gcr-json-key  # This secret allows pulling images from Google Artifact Registry

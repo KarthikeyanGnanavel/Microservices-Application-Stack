@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logged Out</title>
+    <title>Files List</title>
     <link rel="stylesheet" href="styles.css">  <!-- Optional: Add your CSS file if necessary -->
     <style>
         body {
@@ -38,8 +38,6 @@
         }
 
         .container {
-            text-align: center;
-            margin-top: 100px;
             width: 80%;
             max-width: 600px; /* Adjusted max-width for better usability */
             margin: 100px auto;
@@ -47,6 +45,7 @@
             background: white;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
         }
 
         h2 {
@@ -54,9 +53,13 @@
             font-size: 2.5em;
         }
 
-        p {
-            font-size: 1.2em;
-            color: #666;
+        ul {
+            list-style-type: none; /* Remove default list styling */
+            padding: 0; /* Remove default padding */
+        }
+
+        li {
+            margin: 10px 0; /* Add margin for spacing */
         }
 
         a {
@@ -70,22 +73,28 @@
     </style>
 </head>
 <body>
+    <header>
+        <div class="navbar">
+            <h1>My Application</h1>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>  <!-- Redirect to home (login) -->
+                <li><a href="/logins">All User Details</a></li>
+                <li><a href="/list-files">List Files</a></li>  <!-- Ensure this link is correct -->
+            </ul>
+        </div>
+    </header>
 
-<header>
-    <div class="navbar">
-        <h1>My Application</h1>
-        <ul class="nav-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="/logins">All User Details</a></li>
-            <li><a href="/logout">Logout</a></li>
+    <div class="container">
+        <h2>Files in GCP Bucket</h2>
+        <ul>
+            {% for file in files %}
+                <li>
+                    <a href="{{ url_for('download_file', filename=file) }}">{{ file }}</a>  <!-- Make file name a hyperlink -->
+                </li>
+            {% else %}
+                <li>No files found in the bucket.</li>
+            {% endfor %}
         </ul>
     </div>
-</header>
-
-<div class="container">
-    <h1>You have successfully logged out.</h1>
-    <p><a href="/">Click here to login again.</a></p>
-</div>
-
 </body>
 </html>

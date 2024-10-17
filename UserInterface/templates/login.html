@@ -24,10 +24,11 @@
         .nav-links {
             list-style-type: none;
             padding: 0;
+            text-align: center;
         }
 
         .nav-links li {
-            display: inline;
+            display: inline-block;
             margin: 0 15px;
         }
 
@@ -79,6 +80,21 @@
             color: red;
             margin: 10px 0;
         }
+
+        .popup {
+            background-color: #5CB85C;
+            color: white;
+            padding: 10px;
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: none;
+            text-align: center;
+            width: auto;
+        }
+
     </style>
 </head>
 <body>
@@ -88,23 +104,68 @@
         <h1>My Application</h1>
         <ul class="nav-links">
             <li><a href="/">Home</a></li>
-            <li><a href="/logins">All User Details</a></li>
+            <li><a href="/logins">User Details</a></li>
+            <li><a href="{{ url_for('list_files') }}">List Files</a></li> <!-- Updated this line -->
         </ul>
     </div>
 </header>
 
 <div class="container">
     <h1>Employee Login</h1>
-    <form action="/login" method="POST">
+    <form id="login-form" action="/login" method="POST">
         <input type="text" id="username" name="username" placeholder="Employee Name" required>
         <input type="password" id="password" name="password" placeholder="Employee Password" required>
         <button type="submit">Login</button>
-        {% if error %}
-        <p class="error">{{ error }}</p>
-        {% endif %}
     </form>
-    <p><a href="/logins">All User Details</a></p>
+    <button onclick="triggerFileUpload()">Upload Image</button>
+    <input type="file" id="file-input" style="display:none;" onchange="uploadFile()">
+
+    <p class="error" id="error-message">{% if error %}{{ error }}{% endif %}</p>
 </div>
+
+<div class="popup" id="upload-success">File uploaded successfully!</div>
+
+<script>
+    // Function to trigger file input dialog
+    function triggerFileUpload() {
+        document.getElementById('file-input').click();
+    }
+
+    // Function to upload the file using AJAX
+    function uploadFile() {
+        var fileInput = document.getElementById('file-input');
+        var file = fileInput.files[0];
+
+        if (file) {
+            var formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(result => {
+                console.log('Success:', result);
+                showPopup(); // Show success popup
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    }
+
+    // Function to show success popup
+    function showPopup() {
+        var popup = document.getElementById('upload-success');
+        popup.style.display = 'block';
+        setTimeout(function() {
+            popup.style.display = 'none';
+        }, 3000);
+    }
+
+
+</script>
 
 </body>
 </html>

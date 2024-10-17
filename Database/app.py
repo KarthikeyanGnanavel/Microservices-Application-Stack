@@ -204,6 +204,7 @@ def status():
     """Route to check the status of the application."""
     return jsonify({"status": "Application is running"}), 200
 
+
 if __name__ == '__main__':
     if check_database_connection():
         logging.info("Database connection successful, DB up and running.")

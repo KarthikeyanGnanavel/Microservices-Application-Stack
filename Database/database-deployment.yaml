@@ -29,3 +29,17 @@ spec:
           value: "Karthik@98"  # Replace with actual value or use a Kubernetes secret
       imagePullSecrets:
       - name: gcr-json-key  # This secret allows pulling images from Google Artifact Registry
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-app-service
+  namespace: database
+spec:
+  type: LoadBalancer  # Change from ClusterIP to LoadBalancer
+  ports:
+  - port: 5001
+    targetPort: 5001
+  selector:
+    app: db-app

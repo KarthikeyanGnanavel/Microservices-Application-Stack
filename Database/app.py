@@ -208,5 +208,5 @@ def status():
 if __name__ == '__main__':
     if check_database_connection():
         logging.info("Database connection successful, DB up and running.")
-    threading.Thread(target=listen_for_messages).start()  # Start the listener in a separate thread
+    #threading.Thread(target=listen_for_messages).start()  # Start the listener in a separate thread
     app.run(host='0.0.0.0', port=5001, debug=True)

@@ -25,3 +25,16 @@ spec:
           value: "34.74.89.87"  # Use the service name of the db-app
         - name: DB_APP_PORT
           value: "5001"  # Port of the db-app service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui-app-service
+  namespace: ui
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 5002  # Port exposed by the service
+      targetPort: 5002  # Port the container listens on
+  selector:
+    app: ui-app  # This should match the labels of the deployment

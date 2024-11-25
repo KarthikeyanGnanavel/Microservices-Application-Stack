@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: db-app
-        image: gcr.io/docker2gcp/db-app:$SHORT_SHA  # Replace with your actual image details
+        image: us-east1-docker.pkg.dev/docker2gcp/gke/db-app:latest  # Replace with your actual image details
         ports:
         - containerPort: 5001
         env:

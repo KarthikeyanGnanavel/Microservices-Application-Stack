@@ -7,6 +7,8 @@ steps:
   - './UserInterface'
   id: "Build Docker Image for UserInterface"
 
+#us-east1-docker.pkg.dev/docker2gcp/gke/ui-app
+
 - name: 'gcr.io/cloud-builders/docker'
   args:
   - 'push'
@@ -21,6 +23,8 @@ steps:
   - './Database'
   id: "Build Docker Image for Database"
 
+#us-east1-docker.pkg.dev/docker2gcp/gke/db-app
+
 - name: 'gcr.io/cloud-builders/docker'
   args:
   - 'push'
@@ -28,26 +32,18 @@ steps:
   id: "Push Docker Image for Database"
 
 
-# # Step 5: Deploy to GKE
-# - name: 'gcr.io/cloud-builders/kubectl'
-#   args: ['apply', '-f', './Database/database-deployment.yaml']
-#   id: "Deploy Database to GKE"
-# Deploy via Cloud Deploy
+- name: 'google/cloud-sdk:latest'
+  entrypoint: 'sh'
+  args:
+  - -xe
+  - -c 
+  - 
+    gcloud deploy apply --file deploy/pipeline.yaml --region=us-east1
+    gcloud deploy apply --file deploy/dev.yaml --region=us-east1
+    #gcloud deploy apply --file deploy/prod.yaml --region=us-east1
+
+    gcloud deploy releases create 'db-release-${SHORT_SHA}' --delivery-pipeline=gke-cicd-pipeline --region=us-east1 --from -k8s-manifest=./Database/database-deployment.yaml
 
 
-# - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-#   args:
-#     - 'deploy'
-#     - 'releases'
-#     - 'create'
-#     - 'release-$SHORT_SHA'
-#     - '--delivery-pipeline=gke-deployment-pipeline'
-#     - '--region=us-east1' # Change to your Cloud Deploy region
-#     - '--images=db-app=gcr.io/$PROJECT_ID/db-app:$SHORT_SHA'
-#   id: "Trigger Cloud Deploy"
-
-# substitutions:
-#   _CLUSTER: "my-cluster"
-#   _ZONE: "us-east1-c"
 options:
   logging: CLOUD_LOGGING_ONLY

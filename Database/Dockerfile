@@ -29,8 +29,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code
 COPY . .
 
-COPY docker2gcp-facefd49486c.json /app/docker2gcp-facefd49486c.json
-ENV GOOGLE_APPLICATION_CREDENTIALS="/app/docker2gcp-facefd49486c.json" 
+#COPY docker2gcp-facefd49486c.json /app/docker2gcp-facefd49486c.json
+#ENV GOOGLE_APPLICATION_CREDENTIALS="/app/docker2gcp-facefd49486c.json" 
 
 # Expose the port the app runs on
 EXPOSE 5001

@@ -1,9 +1,21 @@
-# apiVersion: deploy.cloud.google.com/v1
-# kind: DeliveryPipeline
-# metadata:
-#   name: microservices-pipeline
-# spec:
-#   stages:
-#   - name: deploy-db
-#     target: gke-prod
-#     profiles: []
+apiVersion: deploy.cloud.google.com/v1
+kind: DeliveryPipeline
+metadata:
+  name: gke-deployment-pipeline
+description: Deployment pipeline for GKE
+serialPipeline:
+  stages:
+  - targetId: gke-dev
+    profiles:
+    - deploy
+
+---
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: gke-dev
+description: Development environment
+gke:
+  cluster: my-cluster
+  location: us-east1-c
+  namespace: dev

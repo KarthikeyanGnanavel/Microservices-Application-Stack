@@ -40,7 +40,7 @@ steps:
     - 'create'
     - 'release-$SHORT_SHA'
     - '--delivery-pipeline=gke-deployment-pipeline'
-    - '--region=us-east1-c' # Change to your Cloud Deploy region
+    - '--region=us-east1' # Change to your Cloud Deploy region
     - '--images=db-app=gcr.io/$PROJECT_ID/db-app:$SHORT_SHA'
   id: "Trigger Cloud Deploy"
 

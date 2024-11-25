@@ -39,6 +39,12 @@ steps:
         --delivery-pipeline=gke-cicd-pipeline \
         --region=us-east1 \
         --from-k8s-manifest=./Database/database-deployment.yaml
+      
+      gcloud deploy releases create "ui-app-release-${SHORT_SHA}" \
+        --delivery-pipeline=gke-cicd-pipeline \
+        --region=us-east1 \
+        --from-k8s-manifest=./UserInterface/ui-deployment.yaml
+      
 
 options:
   logging: CLOUD_LOGGING_ONLY

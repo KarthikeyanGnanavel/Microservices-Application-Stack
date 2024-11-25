@@ -17,12 +17,12 @@ spec:
     spec:
       containers:
       - name: ui-app
-        image: gcr.io/docker2gcp/ui-app:v1  # Replace with your image from Google Artifact Registry
+        image: us-east1-docker.pkg.dev/docker2gcp/gke/ui-app:latest  # Replace with your image from Google Artifact Registry
         ports:
         - containerPort: 5002  # Port your app runs on
         env:
         - name: DB_APP_IP
-          value: "34.74.89.87"  # Use the service name of the db-app
+          value: "35.231.112.222"  # Use the service name of the db-app
         - name: DB_APP_PORT
           value: "5001"  # Port of the db-app service
 ---

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: db-app
-        image: gcr.io/docker2gcp/db-app:v1  # Replace with your actual image details
+        image: gcr.io/docker2gcp/db-app:latest  # Replace with your actual image details
         ports:
         - containerPort: 5001
         env:
@@ -39,7 +39,8 @@ metadata:
 spec:
   type: LoadBalancer  # Change from ClusterIP to LoadBalancer
   ports:
-  - port: 5001
+  - protocol: TCP
+    port: 5001
     targetPort: 5001
   selector:
     app: db-app

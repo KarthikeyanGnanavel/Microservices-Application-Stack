@@ -1,0 +1,41 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - 'build'
+  - '-t'
+  - 'gcr.io/$PROJECT_ID/ui-app:$SHORT_SHA'
+  - './UserInterface'
+  id: "Build Docker Image for UserInterface"
+
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - 'push'
+  - 'gcr.io/$PROJECT_ID/ui-app:$SHORT_SHA'
+  id: "Push Docker Image for UserInterface"
+
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - 'build'
+  - '-t'
+  - 'gcr.io/$PROJECT_ID/db-app:$SHORT_SHA'
+  - './Database'
+  id: "Build Docker Image for Database"
+
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - 'push'
+  - 'gcr.io/$PROJECT_ID/db-app:$SHORT_SHA'
+  id: "Push Docker Image for Database"
+
+
+# Step 5: Deploy to GKE
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: ['apply', '-f', './Database/database-deployment.yaml']
+  id: "Deploy Database to GKE"
+
+
+substitutions:
+  _CLUSTER: "my-cluster"
+  _ZONE: "us-central1-a"
+options:
+  logging: CLOUD_LOGGING_ONLY

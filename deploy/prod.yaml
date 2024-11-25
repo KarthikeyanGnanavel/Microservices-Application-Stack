@@ -2,8 +2,9 @@ apiVersion: deploy.cloud.google.com/v1
 kind: Target
 metadata:
   name: prod
-  annontation: {}
+  annotations: {}
   labels: {}
 description: prod
+requireApproval: true
 gke: 
   cluster: projects/docker2gcp/locations/us-east1-c/clusters/my-cluster2

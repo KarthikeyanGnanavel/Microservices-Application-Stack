@@ -34,7 +34,6 @@ steps:
     - |
       gcloud deploy apply --file deploy/pipeline.yaml --region=us-east1
       gcloud deploy apply --file deploy/dev.yaml --region=us-east1
-    #gcloud deploy apply --file deploy/prod.yaml --region=us-east1
 
       gcloud deploy releases create "db-release-${SHORT_SHA}" \
         --delivery-pipeline=gke-cicd-pipeline \

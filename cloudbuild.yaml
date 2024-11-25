@@ -36,6 +36,6 @@ steps:
 
 substitutions:
   _CLUSTER: "my-cluster"
-  _ZONE: "us-east1-a"
+  _ZONE: "us-east1-c"
 options:
   logging: CLOUD_LOGGING_ONLY

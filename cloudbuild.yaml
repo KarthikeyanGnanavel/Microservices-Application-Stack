@@ -39,4 +39,3 @@ steps:
 #   _ZONE: "us-east1-c"
 options:
   logging: CLOUD_LOGGING_ONLY
-  

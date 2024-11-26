@@ -47,7 +47,7 @@ steps:
       - 'us-east1-docker.pkg.dev/docker2gcp/gke/db-app:latest'
     id: "Push Docker Image for Database"
 
-    # Step 6: Create Pipeline and Target Cloud Deploy
+  # Step 6: Create Pipeline and Target Cloud Deploy
   - name: 'google/cloud-sdk:latest'
     entrypoint: 'sh'
     args:
@@ -82,6 +82,23 @@ steps:
           --from-k8s-manifest=./UserInterface/ui-deployment.yaml
     id: "Deploy ui-app"
     waitFor: ['Deploy db-app']  # Ensures ui-app deployment starts after db-app is deployed
+
+  # Step 9: Promote multiple releases from DEV to PROD
+  - name: 'google/cloud-sdk:latest'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        gcloud deploy releases promote "db-release-${SHORT_SHA}" \
+          --delivery-pipeline=gke-cicd-pipeline \
+          --region=us-east1 \
+          --target=prod
+        gcloud deploy releases promote "ui-app-release-${SHORT_SHA}" \
+          --delivery-pipeline=gke-cicd-pipeline \
+          --region=us-east1 \
+          --target=prod
+    id: "Promote Releases to PROD"
+    waitFor: ['Deploy ui-app']  # Ensures promotion happens after ui-app is deployed
 
 options:
   logging: CLOUD_LOGGING_ONLY

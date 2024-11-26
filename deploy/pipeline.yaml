@@ -8,8 +8,9 @@ description: Deployment pipeline for GKE
 serialPipeline:
   stages:
   - targetId: dev
-    profiles:
-    - dev
+    # profiles:
+    # - dev
   - targetId: prod
-    profiles:
-    - prod
+    manualApproval: true
+    # profiles:
+    # - prod

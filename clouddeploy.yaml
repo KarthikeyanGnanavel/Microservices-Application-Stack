@@ -1,21 +1,104 @@
-apiVersion: deploy.cloud.google.com/v1
-kind: DeliveryPipeline
-metadata:
-  name: gke-deployment-pipeline
-description: Deployment pipeline for GKE
-serialPipeline:
-  stages:
-  - targetId: gke-deployment-pipeline-target-1	
-    profiles:
-    - deploy
+steps:
+  # Step 1: Create the directory for saving the GCP Service Account file
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        # Fetch the secret and store it in /workspace
+        gcloud secrets versions access latest --secret="GCP_SERVICE_ACCOUNT_FILE" > ./UserInterface/docker2gcp-b80ec434f87f.json
+        # Check if the file exists
+        ls -l ./UserInterface/
+        ls -l 
+        cat ./UserInterface/docker2gcp-b80ec434f87f.json
+    id: "Fetching Secrets for Docker Image"
 
----
-apiVersion: deploy.cloud.google.com/v1
-kind: Target
-metadata:
-  name: gke-deployment-pipeline-target-1	
-description: Development environment
-gke:
-  cluster: my-cluster
-  location: us-east1-c
-  namespace: dev
+  # Step 2: Build the UserInterface Docker image with the secret included as a build argument
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-east1-docker.pkg.dev/docker2gcp/gke/ui-app:latest'
+      - '--build-arg'
+      - 'GCP_SERVICE_ACCOUNT_FILE=docker2gcp-b80ec434f87f.json'
+      - './UserInterface'
+    id: "Build Docker Image for UserInterface"
+
+  # Step 3: Push the UserInterface Docker image to the Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-east1-docker.pkg.dev/docker2gcp/gke/ui-app:latest'
+    id: "Push Docker Image for UserInterface"
+
+  # Step 4: Build the Database Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-east1-docker.pkg.dev/docker2gcp/gke/db-app:latest'
+      - './Database'
+    id: "Build Docker Image for Database"
+
+  # Step 5: Push the Database Docker image to the Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-east1-docker.pkg.dev/docker2gcp/gke/db-app:latest'
+    id: "Push Docker Image for Database"
+
+  # Step 6: Create Pipeline and Target Cloud Deploy
+  - name: 'google/cloud-sdk:latest'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        gcloud deploy apply --file deploy/pipeline.yaml --region=us-east1
+        gcloud deploy apply --file deploy/dev.yaml --region=us-east1
+        gcloud deploy apply --file deploy/prod.yaml --region=us-east1
+    id: "Create Pipeline and Targets"
+
+  # Step 7: Deploy the db-app using Cloud Deploy
+  - name: 'google/cloud-sdk:latest'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        gcloud deploy releases create "db-release-${SHORT_SHA}" \
+          --delivery-pipeline=gke-cicd-pipeline \
+          --region=us-east1 \
+          --from-k8s-manifest=./Database/database-deployment.yaml
+    id: "Deploy db-app"
+
+  # Step 8: Deploy the ui-app after db-app is successfully deployed
+  - name: 'google/cloud-sdk:latest'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        gcloud deploy releases create "ui-app-release-${SHORT_SHA}" \
+          --delivery-pipeline=gke-cicd-pipeline \
+          --region=us-east1 \
+          --from-k8s-manifest=./UserInterface/ui-deployment.yaml
+    id: "Deploy ui-app"
+    waitFor: ['Deploy db-app']  # Ensures ui-app deployment starts after db-app is deployed
+
+  # Step 9: Promote multiple releases from DEV to PROD
+  - name: 'google/cloud-sdk:latest'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        gcloud deploy releases promote "db-release-${SHORT_SHA}" \
+          --delivery-pipeline=gke-cicd-pipeline \
+          --region=us-east1 \
+          --target=prod
+        gcloud deploy releases promote "ui-app-release-${SHORT_SHA}" \
+          --delivery-pipeline=gke-cicd-pipeline \
+          --region=us-east1 \
+          --target=prod
+    id: "Promote Releases to PROD"
+    waitFor: ['Deploy ui-app']  # Ensures promotion happens after ui-app is deployed
+
+options:
+  logging: CLOUD_LOGGING_ONLY

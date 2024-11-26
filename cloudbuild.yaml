@@ -83,12 +83,24 @@ steps:
     id: "Deploy ui-app"
     waitFor: ['Deploy db-app']  # Ensures ui-app deployment starts after db-app is deployed
 
+# Step 8.1: Add a wait time between the deployment and promotion
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        echo "Waiting for 5 minutes before promoting to PROD"
+        sleep 180  # Wait for 3 minutes (180 seconds)
+    id: "Wait for Promotion"
+    waitFor: ['Deploy ui-app']  # Ensures wait time happens after ui-app is deployed
+
   # Step 9: Promote multiple releases from DEV to PROD
   - name: 'google/cloud-sdk:latest'
     entrypoint: 'sh'
     args:
       - '-c'
       - |
+        echo "SHORT_SHA: ${SHORT_SHA}"  # Debug the value of SHORT_SHA
         gcloud deploy releases promote "db-release-${SHORT_SHA}" \
           --delivery-pipeline=gke-cicd-pipeline \
           --region=us-east1 \
@@ -98,7 +110,7 @@ steps:
           --region=us-east1 \
           --to-target=prod
     id: "Promote Releases to PROD"
-    waitFor: ['Deploy ui-app']  # Ensures promotion happens after ui-app is deployed
+    waitFor: ['Wait for Promotion']  # Ensures promotion happens after the wait time
 
 options:
   logging: CLOUD_LOGGING_ONLY

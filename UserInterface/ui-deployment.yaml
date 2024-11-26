@@ -25,7 +25,7 @@ spec:
           value: "35.231.112.222"  # Use the service name of the db-app
         - name: DB_APP_PORT
           value: "5001"  # Port of the db-app service
-        -name: GCP_SERVICE_ACCOUNT_FILE
+        - name: GCP_SERVICE_ACCOUNT_FILE
           value: /app/docker2gcp-b80ec434f87f.json
 ---
 apiVersion: v1

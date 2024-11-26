@@ -1,17 +1,17 @@
 steps:
   # Create the directory for saving the GCP Service Account file
-- name: 'gcr.io/cloud-builders/gcloud'
-  entrypoint: 'sh'
-  args:
-    - '-c'
-    - |
-      # Fetch the secret and store it in /workspace
-      gcloud secrets versions access latest --secret="GCP_SERVICE_ACCOUNT_FILE" > /workspace/docker2gcp-b80ec434f87f.json
-      # Check if the file exists
-      ls -l /workspace
-      # Show the contents of the file (this is for debugging, remove it in production)
-      cat /workspace/docker2gcp-b80ec434f87f.json
-  id: "Fetching Secrets for Docker Image"
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        # Fetch the secret and store it in /workspace
+        gcloud secrets versions access latest --secret="GCP_SERVICE_ACCOUNT_FILE" > /workspace/docker2gcp-b80ec434f87f.json
+        # Check if the file exists
+        ls -l /workspace
+        # Show the contents of the file (this is for debugging, remove it in production)
+        cat /workspace/docker2gcp-b80ec434f87f.json
+    id: "Fetching Secrets for Docker Image"
 
   # Build the UserInterface Docker image with the secret included as a build argument
   - name: 'gcr.io/cloud-builders/docker'

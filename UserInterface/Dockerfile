@@ -23,6 +23,9 @@ COPY . .
 # Accept the GCP Service Account file path as a build argument
 ARG GCP_SERVICE_ACCOUNT_FILE
 
+# Print out the value of the GCP_SERVICE_ACCOUNT_FILE to verify
+RUN echo "GCP Service Account File: ${GCP_SERVICE_ACCOUNT_FILE}"
+
 # Copy the GCP JSON key file from the build argument to the container
 COPY ${GCP_SERVICE_ACCOUNT_FILE} /app/docker2gcp-b80ec434f87f.json
 

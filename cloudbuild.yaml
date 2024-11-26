@@ -1,5 +1,5 @@
 steps:
-  # Create the directory for saving the GCP Service Account file
+  # Step 1: Create the directory for saving the GCP Service Account file
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'sh'
     args:
@@ -9,11 +9,9 @@ steps:
         gcloud secrets versions access latest --secret="GCP_SERVICE_ACCOUNT_FILE" > /workspace/docker2gcp-b80ec434f87f.json
         # Check if the file exists
         ls -l /workspace
-        # Show the contents of the file (this is for debugging, remove it in production)
-        cat /workspace/docker2gcp-b80ec434f87f.json
     id: "Fetching Secrets for Docker Image"
 
-  # Build the UserInterface Docker image with the secret included as a build argument
+  # Step 2: Build the UserInterface Docker image with the secret included as a build argument
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
@@ -24,14 +22,14 @@ steps:
       - './UserInterface'
     id: "Build Docker Image for UserInterface"
 
-  # Push the UserInterface Docker image to the Artifact Registry
+  # Step 3: Push the UserInterface Docker image to the Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
       - 'us-east1-docker.pkg.dev/docker2gcp/gke/ui-app:latest'
     id: "Push Docker Image for UserInterface"
 
-  # Build the Database Docker image
+  # Step 4: Build the Database Docker image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
@@ -40,31 +38,36 @@ steps:
       - './Database'
     id: "Build Docker Image for Database"
 
-  # Push the Database Docker image to the Artifact Registry
+  # Step 5: Push the Database Docker image to the Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
       - 'us-east1-docker.pkg.dev/docker2gcp/gke/db-app:latest'
     id: "Push Docker Image for Database"
 
-  # Deploy the application using Cloud Deploy
+  # Step 6: Deploy the db-app using Cloud Deploy
   - name: 'google/cloud-sdk:latest'
     entrypoint: 'sh'
     args:
       - '-c'
       - |
-        gcloud deploy apply --file deploy/pipeline.yaml --region=us-east1
-        gcloud deploy apply --file deploy/dev.yaml --region=us-east1
-
         gcloud deploy releases create "db-release-${SHORT_SHA}" \
           --delivery-pipeline=gke-cicd-pipeline \
           --region=us-east1 \
           --from-k8s-manifest=./Database/database-deployment.yaml
-        
+    id: "Deploy db-app"
+
+  # Step 7: Deploy the ui-app after db-app is successfully deployed
+  - name: 'google/cloud-sdk:latest'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
         gcloud deploy releases create "ui-app-release-${SHORT_SHA}" \
           --delivery-pipeline=gke-cicd-pipeline \
           --region=us-east1 \
           --from-k8s-manifest=./UserInterface/ui-deployment.yaml
+    waitFor: ['Deploy db-app']  # Ensures ui-app deployment starts after db-app is deployed
 
 options:
   logging: CLOUD_LOGGING_ONLY

@@ -20,8 +20,11 @@ COPY .env .env
 # Copy the rest of the application code
 COPY . .
 
-# Copy the GCP JSON key file
-COPY docker2gcp-b80ec434f87f.json /app/docker2gcp-b80ec434f87f.json
+# Accept the GCP Service Account file path as a build argument
+ARG GCP_SERVICE_ACCOUNT_FILE
+
+# Copy the GCP JSON key file from the build argument to the container
+COPY ${GCP_SERVICE_ACCOUNT_FILE} /app/docker2gcp-b80ec434f87f.json
 
 # Set environment variable for the GCP key file
 ENV GCP_SERVICE_ACCOUNT_FILE=/app/docker2gcp-b80ec434f87f.json

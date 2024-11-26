@@ -7,6 +7,7 @@ steps:
       - |
         mkdir -p /workspace/app
         gcloud secrets versions access latest --secret="GCP_SERVICE_ACCOUNT_FILE" > /workspace/app/docker2gcp-b80ec434f87f.json
+    id: "Fetching Secrets for Docker Image"
 
   # Build the UserInterface Docker image with the secret included as a build argument
   - name: 'gcr.io/cloud-builders/docker'

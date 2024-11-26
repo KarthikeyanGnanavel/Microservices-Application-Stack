@@ -9,7 +9,8 @@ RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     unixodbc-dev
-
+    bash
+    
 # Install the necessary dependencies, including python-dotenv
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
@@ -34,6 +35,8 @@ COPY docker2gcp-b80ec434f87f.json /app/docker2gcp-b80ec434f87f.json
 # Set environment variable for the GCP key file
 ENV GCP_SERVICE_ACCOUNT_FILE=/app/docker2gcp-b80ec434f87f.json
 ENV GCP_BUCKET_NAME=docker2gcp_bucket
+
+RUN ls /app
 
 # Command to run the application
 CMD ["python", "app.py"]

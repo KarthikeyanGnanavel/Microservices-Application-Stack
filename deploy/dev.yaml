@@ -5,5 +5,7 @@ metadata:
   annotations: {}
   labels: {}
 description: dev
+profiles:
+  - prod
 gke: 
   cluster: projects/docker2gcp/locations/us-east1-c/clusters/my-cluster

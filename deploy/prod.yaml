@@ -5,6 +5,8 @@ metadata:
   annotations: {}
   labels: {}
 description: prod
+profiles:
+  - prod
 requireApproval: true
 gke: 
   cluster: projects/docker2gcp/locations/us-east1-c/clusters/my-cluster2

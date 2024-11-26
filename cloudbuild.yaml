@@ -1,11 +1,12 @@
 steps:
-  # Access the GCP Service Account file and save it in a temporary file
+  # Create the directory for saving the GCP Service Account file
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'sh'
     args:
       - '-c'
       - |
-        gcloud secrets versions access latest --secret="GCP_SERVICE_ACCOUNT_FILE" > /app/docker2gcp-b80ec434f87f.json
+        mkdir -p /workspace/app
+        gcloud secrets versions access latest --secret="GCP_SERVICE_ACCOUNT_FILE" > /workspace/app/docker2gcp-b80ec434f87f.json
 
   # Build the UserInterface Docker image with the secret included as a build argument
   - name: 'gcr.io/cloud-builders/docker'
@@ -14,7 +15,7 @@ steps:
       - '-t'
       - 'us-east1-docker.pkg.dev/docker2gcp/gke/ui-app:latest'
       - '--build-arg'
-      - 'GCP_SERVICE_ACCOUNT_FILE=/app/docker2gcp-b80ec434f87f.json'
+      - 'GCP_SERVICE_ACCOUNT_FILE=/workspace/app/docker2gcp-b80ec434f87f.json'
       - './UserInterface'
     id: "Build Docker Image for UserInterface"
 

@@ -27,10 +27,10 @@ ARG GCP_SERVICE_ACCOUNT_FILE
 RUN echo "GCP Service Account File: ${GCP_SERVICE_ACCOUNT_FILE}"
 
 # Copy the GCP JSON key file from the build argument to the container
-COPY ${GCP_SERVICE_ACCOUNT_FILE} /app/docker2gcp-b80ec434f87f.json
+COPY ${GCP_SERVICE_ACCOUNT_FILE} /app/${GCP_SERVICE_ACCOUNT_FILE}
 
 # Set environment variable for the GCP key file
-ENV GCP_SERVICE_ACCOUNT_FILE=/app/docker2gcp-b80ec434f87f.json
+ENV GCP_SERVICE_ACCOUNT_FILE=/app/${GCP_SERVICE_ACCOUNT_FILE}
 
 # Command to run the application
 CMD ["python", "app.py"]

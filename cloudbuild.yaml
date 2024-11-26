@@ -20,7 +20,7 @@ steps:
       - '-t'
       - 'us-east1-docker.pkg.dev/docker2gcp/gke/ui-app:latest'
       - '--build-arg'
-      - 'GCP_SERVICE_ACCOUNT_FILE=/workspace/docker2gcp-b80ec434f87f.json'
+      - 'GCP_SERVICE_ACCOUNT_FILE=docker2gcp-b80ec434f87f.json'
       - './UserInterface'
     id: "Build Docker Image for UserInterface"
 

@@ -1,5 +1,5 @@
 steps:
-# Access the GCP Service Account file and save it in a temporary file
+  # Access the GCP Service Account file and save it in a temporary file
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'sh'
     args:
@@ -18,12 +18,14 @@ steps:
       - './UserInterface'
     id: "Build Docker Image for UserInterface"
 
+  # Push the UserInterface Docker image to the Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
       - 'us-east1-docker.pkg.dev/docker2gcp/gke/ui-app:latest'
     id: "Push Docker Image for UserInterface"
 
+  # Build the Database Docker image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
@@ -32,12 +34,14 @@ steps:
       - './Database'
     id: "Build Docker Image for Database"
 
+  # Push the Database Docker image to the Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
       - 'us-east1-docker.pkg.dev/docker2gcp/gke/db-app:latest'
     id: "Push Docker Image for Database"
 
+  # Deploy the application using Cloud Deploy
   - name: 'google/cloud-sdk:latest'
     entrypoint: 'sh'
     args:
@@ -55,8 +59,6 @@ steps:
           --delivery-pipeline=gke-cicd-pipeline \
           --region=us-east1 \
           --from-k8s-manifest=./UserInterface/ui-deployment.yaml
-        
 
-  options:
-    logging: CLOUD_LOGGING_ONLY
-
+options:
+  logging: CLOUD_LOGGING_ONLY

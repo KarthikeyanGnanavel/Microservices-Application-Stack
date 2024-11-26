@@ -5,8 +5,8 @@ steps:
     args:
       - '-c'
       - |
-        mkdir -p /workspace/app
-        gcloud secrets versions access latest --secret="GCP_SERVICE_ACCOUNT_FILE" > /workspace/app/docker2gcp-b80ec434f87f.json
+        gcloud secrets versions access latest --secret="GCP_SERVICE_ACCOUNT_FILE" > /workspace/docker2gcp-b80ec434f87f.json
+        cat /workspace/docker2gcp-b80ec434f87f.json
     id: "Fetching Secrets for Docker Image"
 
   # Build the UserInterface Docker image with the secret included as a build argument
@@ -16,7 +16,7 @@ steps:
       - '-t'
       - 'us-east1-docker.pkg.dev/docker2gcp/gke/ui-app:latest'
       - '--build-arg'
-      - 'GCP_SERVICE_ACCOUNT_FILE=/workspace/app/docker2gcp-b80ec434f87f.json'
+      - 'GCP_SERVICE_ACCOUNT_FILE=/workspace/docker2gcp-b80ec434f87f.json'
       - './UserInterface'
     id: "Build Docker Image for UserInterface"
 

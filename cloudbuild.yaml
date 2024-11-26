@@ -1,9 +1,19 @@
 steps:
+- name: 'gcr.io/cloud-builders/gcloud'
+  args:
+    - 'secrets'
+    - 'access'
+    - 'docker2gcp-b80ec434f87f.json'
+  entrypoint: 'bash'
+  env:
+    - 'GCP_SERVICE_ACCOUNT_FILE=$(gcloud secrets versions access latest --secret="GCP_SERVICE_ACCOUNT_FILE")'
+
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'build'
     - '-t'
     - 'us-east1-docker.pkg.dev/docker2gcp/gke/ui-app:latest'
+    - '--build-arg=GCP_SERVICE_ACCOUNT_FILE=$(GCP_SERVICE_ACCOUNT_FILE)'
     - './UserInterface'
   id: "Build Docker Image for UserInterface"
 

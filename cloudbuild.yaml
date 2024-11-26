@@ -6,9 +6,11 @@ steps:
       - '-c'
       - |
         # Fetch the secret and store it in /workspace
-        gcloud secrets versions access latest --secret="GCP_SERVICE_ACCOUNT_FILE" > /workspace/docker2gcp-b80ec434f87f.json
+        gcloud secrets versions access latest --secret="GCP_SERVICE_ACCOUNT_FILE" > ./UserInterface/docker2gcp-b80ec434f87f.json
         # Check if the file exists
-        ls -l /workspace
+        ls -l ./UserInterface/
+        ls -l 
+        cat ./UserInterface/docker2gcp-b80ec434f87f.json
     id: "Fetching Secrets for Docker Image"
 
   # Step 2: Build the UserInterface Docker image with the secret included as a build argument
@@ -67,6 +69,7 @@ steps:
           --delivery-pipeline=gke-cicd-pipeline \
           --region=us-east1 \
           --from-k8s-manifest=./UserInterface/ui-deployment.yaml
+    id: "Deploy ui-app"
     waitFor: ['Deploy db-app']  # Ensures ui-app deployment starts after db-app is deployed
 
 options:

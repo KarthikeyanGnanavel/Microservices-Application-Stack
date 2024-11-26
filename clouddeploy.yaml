@@ -5,7 +5,7 @@ metadata:
 description: Deployment pipeline for GKE
 serialPipeline:
   stages:
-  - targetId: gke-dev
+  - targetId: gke-deployment-pipeline-target-1	
     profiles:
     - deploy
 
@@ -13,7 +13,7 @@ serialPipeline:
 apiVersion: deploy.cloud.google.com/v1
 kind: Target
 metadata:
-  name: gke-dev
+  name: gke-deployment-pipeline-target-1	
 description: Development environment
 gke:
   cluster: my-cluster

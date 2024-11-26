@@ -1,0 +1,32 @@
+# API Enabled
+Cloud Build API
+Cloud Deploy API
+Cloud SQL Admin API
+Compute Engine API
+Kubernetes Engine API
+
+#Commands to Create GKE Cluster
+gcloud auth login
+gcloud config set project docker2gcp
+gcloud config set compute/zone us-east1
+gcloud container clusters create my-cluster --num-nodes=1 --zone=us-east1-c --machine-type=e2-medium --enable-ip-alias --release-channel=regular
+gcloud container clusters get-credentials my-cluster --zone=us-east1-c
+kubectl get nodes
+
+# To rollback cluster
+--
+gcloud container clusters delete my-cluster --zone us-east1
+gcloud container clusters list
+gcloud container node-pools delete [NODE_POOL_NAME] --cluster=my-cluster --zone=us-east1-c
+gcloud compute disks list
+gcloud compute disks delete [DISK_NAME] --zone=us-central1-a
+gcloud compute firewall-rules list
+gcloud compute firewall-rules delete [FIREWALL_RULE_NAME]
+gcloud compute addresses list
+gcloud compute addresses delete [ADDRESS_NAME] --region=us-east1
+	
+gcloud compute forwarding-rules delete [FORWARDING_RULE_NAME] --region=us-east1
+
+
+
+Cloud Buildgcloud config set builds/region us-east1

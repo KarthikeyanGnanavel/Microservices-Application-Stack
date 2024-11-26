@@ -89,14 +89,14 @@ steps:
     args:
       - '-c'
       - |
-      gcloud deploy releases promote "db-release-${SHORT_SHA}" \
-        --delivery-pipeline=gke-cicd-pipeline \
-        --region=us-east1 \
-        --to-target=prod
-      gcloud deploy releases promote "ui-app-release-${SHORT_SHA}" \
-        --delivery-pipeline=gke-cicd-pipeline \
-        --region=us-east1 \
-        --to-target=prod
+        gcloud deploy releases promote "db-release-${SHORT_SHA}" \
+          --delivery-pipeline=gke-cicd-pipeline \
+          --region=us-east1 \
+          --to-target=prod
+        gcloud deploy releases promote "ui-app-release-${SHORT_SHA}" \
+          --delivery-pipeline=gke-cicd-pipeline \
+          --region=us-east1 \
+          --to-target=prod
     id: "Promote Releases to PROD"
     waitFor: ['Deploy ui-app']  # Ensures promotion happens after ui-app is deployed
 

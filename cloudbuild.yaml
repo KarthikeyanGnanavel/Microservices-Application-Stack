@@ -1,61 +1,62 @@
 steps:
+# Access the GCP Service Account file and save it in a temporary file
 - name: 'gcr.io/cloud-builders/gcloud'
-  args:
-    - 'secrets'
-    - 'access'
-    - 'docker2gcp-b80ec434f87f.json'
-  entrypoint: 'bash'
-  env:
-    - 'GCP_SERVICE_ACCOUNT_FILE=$(gcloud secrets versions access latest --secret="GCP_SERVICE_ACCOUNT_FILE")'
-
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    - 'build'
-    - '-t'
-    - 'us-east1-docker.pkg.dev/docker2gcp/gke/ui-app:latest'
-    - '--build-arg=GCP_SERVICE_ACCOUNT_FILE=$(GCP_SERVICE_ACCOUNT_FILE)'
-    - './UserInterface'
-  id: "Build Docker Image for UserInterface"
-
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    - 'push'
-    - 'us-east1-docker.pkg.dev/docker2gcp/gke/ui-app:latest'
-  id: "Push Docker Image for UserInterface"
-
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    - 'build'
-    - '-t'
-    - 'us-east1-docker.pkg.dev/docker2gcp/gke/db-app:latest'
-    - './Database'
-  id: "Build Docker Image for Database"
-
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    - 'push'
-    - 'us-east1-docker.pkg.dev/docker2gcp/gke/db-app:latest'
-  id: "Push Docker Image for Database"
-
-- name: 'google/cloud-sdk:latest'
   entrypoint: 'sh'
   args:
     - '-c'
     - |
-      gcloud deploy apply --file deploy/pipeline.yaml --region=us-east1
-      gcloud deploy apply --file deploy/dev.yaml --region=us-east1
+      gcloud secrets versions access latest --secret="GCP_SERVICE_ACCOUNT_FILE" > /app/docker2gcp-b80ec434f87f.json
 
-      gcloud deploy releases create "db-release-${SHORT_SHA}" \
-        --delivery-pipeline=gke-cicd-pipeline \
-        --region=us-east1 \
-        --from-k8s-manifest=./Database/database-deployment.yaml
-      
-      gcloud deploy releases create "ui-app-release-${SHORT_SHA}" \
-        --delivery-pipeline=gke-cicd-pipeline \
-        --region=us-east1 \
-        --from-k8s-manifest=./UserInterface/ui-deployment.yaml
-      
+# Build the UserInterface Docker image with the secret included as a build argument
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'build'
+    - '-t'
+    - 'us-east1-docker.pkg.dev/docker2gcp/gke/ui-app:latest'
+    - '--build-arg'
+    - 'GCP_SERVICE_ACCOUNT_FILE=/app/docker2gcp-b80ec434f87f.json'
+    - './UserInterface'
+  id: "Build Docker Image for UserInterface"
 
-options:
-  logging: CLOUD_LOGGING_ONLY
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-east1-docker.pkg.dev/docker2gcp/gke/ui-app:latest'
+    id: "Push Docker Image for UserInterface"
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-east1-docker.pkg.dev/docker2gcp/gke/db-app:latest'
+      - './Database'
+    id: "Build Docker Image for Database"
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-east1-docker.pkg.dev/docker2gcp/gke/db-app:latest'
+    id: "Push Docker Image for Database"
+
+  - name: 'google/cloud-sdk:latest'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        gcloud deploy apply --file deploy/pipeline.yaml --region=us-east1
+        gcloud deploy apply --file deploy/dev.yaml --region=us-east1
+
+        gcloud deploy releases create "db-release-${SHORT_SHA}" \
+          --delivery-pipeline=gke-cicd-pipeline \
+          --region=us-east1 \
+          --from-k8s-manifest=./Database/database-deployment.yaml
+        
+        gcloud deploy releases create "ui-app-release-${SHORT_SHA}" \
+          --delivery-pipeline=gke-cicd-pipeline \
+          --region=us-east1 \
+          --from-k8s-manifest=./UserInterface/ui-deployment.yaml
+        
+
+  options:
+    logging: CLOUD_LOGGING_ONLY
 
